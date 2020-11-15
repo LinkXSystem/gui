@@ -1,3 +1,5 @@
 ## ignore the file of mac
-
 .DS_Store
+
+## ignore the file of vscode
+.vscode
