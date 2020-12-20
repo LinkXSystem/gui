@@ -1,148 +1,99 @@
-class EventBootstrap {
-    constructor() {
-        this.stack = new Map();
-    }
+import { Context } from './runtime/index.js';
 
-    on(event, listener) {
-        const target = this.stack.get(event);
+import { DrawOptions, Icon } from './constants/editor.option.js';
 
-        const listeners = target ? target : new Array();
-        listeners.push(listener);
-        this.stack.set(event, listeners)
-    }
+import {
+    Tool,
+    Canvas,
+    Box
+} from './components/index.js';
 
-    emit(event, value) {
-        const target = this.stack.get(event);
-        if (target) {
-            target.forEach(callback => {
-                callback(value);
-            });
-        }
-    }
-}
+import { LeftCenterStyleSheet, CenterStyleSheet } from './stylesheets/default-stylesheet.js';
+import { ToolStyleSheet, ToolItemStyleSheet, CanvasStyleSheet, MonitorStyleSheet } from './stylesheets/stylesheet.js';
 
-class Context {
-    constructor() {
-        this.bootstrap = new EventBootstrap();
-        this.layers = [];
-    }
+const runtime = new Context();
 
-    on(event, listener) {
-        this.bootstrap.on(event, listener);
-    }
-
-    emit(event, value) {
-        this.bootstrap.emit(event, value);
-    }
-
-    setLayer(layer) {
-        this.layers.push(layer);
-    }
-}
-
-const context = new Context();
-context.on('event', (value) => {
+runtime.on('event', (value) => {
     console.warn("===============================");
     console.warn(value);
     console.warn("===============================");
 });
 
 function setTool(container) {
-    const tool = document.createElement('div');
-    tool.style.position = 'fixed';
-    tool.style.top = '50%';
-    tool.style.transform = 'translateY(-50%)';
+    const tool = new Tool();
+    tool.setStyleSheet(Object.assign({}, LeftCenterStyleSheet, ToolStyleSheet));
+    tool.render(container);
 
-    tool.style.minWidth = '36px';
-    tool.style.minHeight = '120px';
-    tool.style.background = 'rgb(37, 37, 38)';
-
-    container.appendChild(tool);
-
-    for (let i = 0; i < 20; i++) {
-        setToolItem(tool);
+    for (let i = 0; i < DrawOptions.length; i++) {
+        const option = DrawOptions[i]
+        tool.setItem({
+            text: 'Core',
+            icon: Icon(option.icon),
+            events: {
+                click: (event) => (runtime.emit('event', event))
+            },
+            stylesheet: ToolItemStyleSheet
+        });
     }
 
     return tool;
 }
 
-function setToolItem(container) {
-    const item = document.createElement('div');
-    item.style.height = '36px';
-    item.style.background = 'transparent';
+function setMonitor(container) {
+    const monitor = new Box();
+    monitor.setStyleSheet(Object.assign({}, MonitorStyleSheet))
+    const canvas = new Canvas(640, 480);
+    canvas.setStyleSheet(Object.assign({}, {
+        width: `${640 * 0.3}px`,
+        height: `${480 * 0.3}px`,
+        background: '#ffffff'
+    }))
 
-    container.appendChild(item);
-
-    item.addEventListener('click', (event) => {
-        context.emit('event', event);
-    });
-}
-
-function setCanvas(container) {
-    const canvas = document.createElement('canvas');
-    canvas.style.width = '640px';
-    canvas.style.height = '480px';
-
-    canvas.width = 640;
-    canvas.height = 480;
-
-    canvas.style.boxShadow = '0px 0px 10px 0px rgb(30, 30, 30)';
-    canvas.style.position = 'fixed';
-    canvas.style.top = '50%';
-    canvas.style.left = '50%';
-    canvas.style.transform = 'translate(-50%, -50%)';
-
-    const context = canvas.getContext('2d');
-
-    context.arc(200 * Math.random(), 200 * Math.random(), 20, Math.PI / 180 * 0, Math.PI / 180 * 360, true);
-    context.stroke();
-
-    container.appendChild(canvas);
+    monitor.render(container);
+    canvas.render(monitor.element);
 
     return canvas;
 }
 
-function setMonitor(container) {
-    const monitor = document.createElement('div');
-    const canvas = document.createElement('canvas');
-    monitor.appendChild(canvas);
+function setCanvas(container) {
+    const width = 640;
+    const height = 640;
 
-    monitor.style.position = 'fixed';
-    monitor.style.bottom = '1em';
-    monitor.style.right = '2em';
-    monitor.style.background = 'rgb(30, 30, 30)';
+    const canvas = new Canvas(width, height, true);
 
-    container.appendChild(monitor);
+    canvas.setStyleSheet(Object.assign({}, CenterStyleSheet, CanvasStyleSheet));
+    canvas.render(container);
 
-    return monitor;
+    return canvas;
 }
 
 function setLayer(container) {
-    const layer = document.createElement('div');
-    layer.style.position = 'fixed';
-    layer.style.right = '0px';
-    layer.style.top = '50%';
-    layer.style.transform = 'translateY(-50%)';
-
-    layer.style.minWidth = '72px';
-    layer.style.minHeight = '360px';
-    layer.style.background = 'rgb(37, 37, 38)';
-
-    container.appendChild(layer);
+    const layer = new Box();
+    // TODO: 是否应该是反向注入
+    // container.appendChild(layer);
 
     return layer;
 }
 
 function render(container) {
     setTool(container);
+
     {
-        setCanvas(container);
-        setCanvas(container);
-        setCanvas(container);
-        setCanvas(container);
+        const monitor = setMonitor(container);
+        const canvas = setCanvas(container);
+
+        canvas.setMonitor(monitor);
+
+        runtime.setContext(canvas.getContext());
     }
-    setMonitor(container);
     setLayer(container);
+
+    {
+        const context = runtime.getContext();
+        setTimeout(() => {
+            context.fillRect(0, 0, 100, 100);
+        }, 1000);
+    }
 }
 
 (function () {
