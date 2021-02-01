@@ -8,7 +8,12 @@
 </head>
 
 <body>
+    <g-box></g-box>
+    <script type="module">
+        import { Box } from '../bundled/gui.esm.js';
 
+        window.customElements.define('g-box', Box);
+    </script>
 </body>
 
 </html>
