@@ -1,5 +1,11 @@
-## ignore the file of mac
-.DS_Store
+# ignore the node_modules
 
-## ignore the file of vscode
-.vscode
+node_modules
+package-lock.json
+yarn.lock
+
+## the compile file
+
+bin
+
+bundled
