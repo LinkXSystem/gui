@@ -45,7 +45,7 @@ jobs:
       run: git add bundled
     
     - name: git action (Commit)
-      run: git commit -m "builded the version feature !"
+      run: git commit -m "builded the version feature"
     
     - name: release 
       run: npm run release
