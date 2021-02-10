@@ -32,7 +32,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps: 
+    - name: check out source code
+      uses: actions/checkout@v2
+
     - name: git config (Config)
+      run: git config user.name "zhi"
+
+    - name: git config (Config)
+      run: git config user.email "linkxsystem@gmail.com"
 
     - name: git action (Add)
       run: git add bundled
