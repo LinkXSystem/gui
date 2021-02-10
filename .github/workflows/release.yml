@@ -27,25 +27,19 @@ jobs:
     - run: npm install
 
     - name: build the bundled
-      run: npm run build
+      run: |
+        npm run build
+        git add bundled
+        git status
 
     - name: git config (Config)
-      run: git config user.name "zhi"
+      run: |
+        git config --local user.name "zhi"
+        git config --local user.email "linkxsystem@gmail.com"
+        git commit -m "builded the version feature"
 
-    - name: git config (Config)
-      run: git config user.email "linkxsystem@gmail.com"
-
-    - name: git action (Add)
-      run: git add bundled
-
-    - name: git action (Status)
-      run: git status
-    
-    - name: git action (Commit)
-      run: git commit -m "builded the version feature"
-    
-    - name: release 
-      run: npm run release
-    
-    - name: publish
-      run: git push origin release
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
