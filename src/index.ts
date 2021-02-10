@@ -8,6 +8,8 @@ function getRuntime() {
     return Runtime.getInstance();
 }
 
+export const version = 'v0.0.2';
+
 export default {
     getRuntime,
     render,
