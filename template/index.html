@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GUI</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/material-design-icons/3.0.2/iconfont/material-icons.min.css"
+        rel="stylesheet">
+</head>
+
+<body>
+    <g-toolbar position="right">
+        <slot>
+            <g-tool command="add" tooltip="add a graphic to the canvas !">
+                <i class="material-icons">add</i>
+            </g-tool>
+            <g-tool command="add" tooltip="add a graphic to the canvas !">
+                <i class="material-icons">add</i>
+            </g-tool>
+            <g-tool command="add" tooltip="add a graphic to the canvas !">
+                <i class="material-icons">add</i>
+            </g-tool>
+            <g-tool command="add" tooltip="add a graphic to the canvas !">
+                <i class="material-icons">add</i>
+            </g-tool>
+            <g-tool command="add" tooltip="add a graphic to the canvas !">
+                <i class="material-icons">add</i>
+            </g-tool>
+        </slot>
+    </g-toolbar>
+    <script type="module">
+        import GUI, { Box, Toolbar, Tool, Icon } from '../bundled/gui.esm.js';
+
+        GUI.register('g', [Box, Toolbar, Tool, Icon], () => {
+            console.warn('register complete !');
+        });
+
+        window.__runtime__ = GUI.getRuntime();
+
+        // const html = `
+        //     <g-box width="100px" height="100px" onRef="() => {console.warn('this is message !!!')}">
+        //         <slot>
+        //             <span>LinkXSystem</span>
+        //         </slot>
+        //     </g-box>
+        // `;
+
+        // GUI.render(html, document.body);
+    </script>
+</body>
+
+</html>
