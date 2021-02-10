@@ -5,12 +5,26 @@
  * 
  */
 
+import { render } from 'lit-html';
+
+import { Primitive } from "./primitive";
+import { Style } from "./style";
+
 export class Element extends HTMLElement {
+    static register(prefix: string) {
+        window.customElements.define(`${prefix}-element`, Element);
+    }
+
+    primitive!: Primitive;
+    sheet!: Style;
+
+    element!: HTMLElement;
+
     constructor() {
         super();
 
         // render method
-        this.render();
+        this._render();
     }
 
     /**
@@ -37,15 +51,36 @@ export class Element extends HTMLElement {
     /**
      * @description 当 custom element增加、删除、修改自身属性时，被调用
      */
-    attributeChangedCallback() {
+    attributeChangedCallback(_name: string, _o: string, _n: string) {
         console.warn('the unimplemented function: attributeChangedCallback ！');
     }
 
-    render() {
-        const shadow = this.attachShadow({ mode: 'open' });
-        const div = document.createElement('div');
+    _handleInitialStyle(shadow: ShadowRoot) {
         const style = document.createElement('style');
         shadow.appendChild(style);
-        shadow.appendChild(div);
     }
+
+    _render() {
+        const shadow = this.attachShadow({ mode: 'open' });
+        const element = document.createElement('div');
+        shadow.appendChild(element);
+
+        this._handleInitialStyle(shadow);
+
+        // TODO: how to get the dom ?
+        // @ts-ignore
+        const dom = this.render();
+
+        this.element = element;
+
+        this.primitive = new Primitive(element)
+        this.sheet = new Style(element);
+
+        // @ts-ignore
+        if (dom) {
+            render(dom, element);
+        }
+    }
+
+    render() { }
 }
